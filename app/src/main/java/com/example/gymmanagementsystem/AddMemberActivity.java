@@ -128,6 +128,7 @@ public class AddMemberActivity extends AppCompatActivity {
         String startDate = etStartDatePicker.getText().toString().trim();
         String endDate = etEndDatePicker.getText().toString().trim();
 
+
         if ((name.length() < 3) || !(name.matches("^[a-zA-Z\\s]+$"))){
             Toast.makeText(this, "Please enter a valid username", Toast.LENGTH_SHORT).show();
         } else if ( !phoneNumber.matches("^(\\+\\d{1,3}\\d{9}|\\d{11})$")){
