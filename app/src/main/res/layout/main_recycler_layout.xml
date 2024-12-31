@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="@dimen/mainLayoutCardWidth"
+        android:layout_height="@dimen/mainLayoutCardHeight"
+        android:backgroundTint="@color/clrSea"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            >
+            <ImageView
+                android:id="@+id/ivMainCardIcon"
+                android:layout_width="@dimen/mainLayoutCardIcon"
+                android:layout_height="@dimen/mainLayoutCardIcon"
+                android:src="@drawable/group"
+               />
+
+            <TextView
+                android:id="@+id/tvMainCardTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Expiring \n (8-15 days)"
+                android:gravity="center"
+                android:textColor="@color/clrDarkestBlue"
+                android:textStyle="bold"
+                android:textSize="@dimen/mainLayoutCardTextSize"
+                android:layout_marginTop="@dimen/mainLayoutCardInMargin"
+                android:layout_marginBottom="@dimen/mainLayoutCardInMargin"/>
+
+            <TextView
+                android:id="@+id/tvMainCardMembers"
+                android:layout_width="@dimen/mainLayoutCardIcon"
+                android:layout_height="@dimen/mainLayoutCardIcon"
+                android:text="15"
+                android:textSize="@dimen/mainLayoutCardTextSize"
+                android:textColor="@color/white"
+                android:background="@drawable/circle"
+                android:textAlignment="center"
+                android:paddingTop="7dp"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

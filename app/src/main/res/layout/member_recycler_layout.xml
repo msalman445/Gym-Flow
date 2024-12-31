@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvMember"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/clrSea"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintLeft_toLeftOf="@+id/guidelineVerticalLeft"
+        app:layout_constraintRight_toRightOf="@+id/guidelineVerticalRight"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp">
+
+            <ImageView
+                android:id="@+id/ivProfile"
+                android:layout_width="@dimen/memberImageSize"
+                android:layout_height="@dimen/memberImageSize"
+                android:background="@drawable/circle"
+                android:src="@drawable/person"
+                android:layout_marginTop="15dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+
+            <TextView
+                android:id="@+id/tvNameTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name:"
+                android:textSize="@dimen/memberTextSize"
+                android:textStyle="bold"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/ivProfile"
+                android:layout_marginStart="20dp"
+                />
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Muhammad Salman"
+                android:textSize="@dimen/memberTextSize"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintTop_toBottomOf="@id/tvNameTitle"
+                app:layout_constraintLeft_toLeftOf="@id/tvNameTitle"
+                android:layout_marginStart="20dp"
+                />
+
+            <TextView
+                android:id="@+id/tvAddressTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Address:"
+                android:textSize="@dimen/memberTextSize"
+                android:textStyle="bold"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintTop_toBottomOf="@id/tvName"
+                app:layout_constraintLeft_toLeftOf="@id/tvNameTitle"
+                />
+
+            <TextView
+                android:id="@+id/tvAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Al Faisal Town Dahranwala"
+                android:textSize="@dimen/memberTextSize"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintTop_toBottomOf="@id/tvAddressTitle"
+                app:layout_constraintLeft_toLeftOf="@id/tvName"
+                />
+
+            <TextView
+                android:id="@+id/tvPhoneTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone Number:"
+                android:textSize="@dimen/memberTextSize"
+                android:textStyle="bold"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintTop_toBottomOf="@id/tvAddress"
+                app:layout_constraintLeft_toLeftOf="@id/tvAddressTitle"
+                />
+
+            <TextView
+                android:id="@+id/tvPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="03012345678"
+                android:textSize="@dimen/memberTextSize"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintTop_toBottomOf="@id/tvPhoneTitle"
+                app:layout_constraintLeft_toLeftOf="@id/tvAddress"
+                />
+
+            <TextView
+                android:id="@+id/tvJoinDateTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Join Date:"
+                android:textSize="@dimen/memberTextSize"
+                android:textStyle="bold"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintTop_toBottomOf="@id/tvPhone"
+                app:layout_constraintLeft_toLeftOf="@id/ivProfile"
+                android:layout_marginTop="@dimen/memberMarginTop"
+                />
+
+            <TextView
+                android:id="@+id/tvJoinDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nov 03, 2024"
+                android:textSize="@dimen/memberTextSize"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintBottom_toBottomOf="@id/tvJoinDateTitle"
+                app:layout_constraintLeft_toRightOf="@id/tvJoinDateTitle"
+                android:layout_marginLeft="@dimen/memberMarginBWTitleAndText"
+                />
+
+            <TextView
+                android:id="@+id/tvEndDateTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End Date:"
+                android:textSize="@dimen/memberTextSize"
+                android:textStyle="bold"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintBottom_toBottomOf="@id/tvJoinDateTitle"
+                app:layout_constraintLeft_toRightOf="@id/tvJoinDate"
+                android:layout_marginStart="@dimen/memberMarginTop"
+                />
+
+            <TextView
+                android:id="@+id/tvEndDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nov 03, 2025"
+                android:textSize="@dimen/memberTextSize"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintBottom_toBottomOf="@id/tvEndDateTitle"
+                app:layout_constraintLeft_toRightOf="@id/tvEndDateTitle"
+                android:layout_marginStart="@dimen/memberMarginBWTitleAndText"
+                />
+
+            <TextView
+                android:id="@+id/tvFinalAmountTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Final Amount:"
+                android:textSize="@dimen/memberTextSize"
+                android:textStyle="bold"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintTop_toBottomOf="@id/tvJoinDateTitle"
+                app:layout_constraintLeft_toLeftOf="@id/tvJoinDateTitle"
+                android:layout_marginTop="@dimen/memberMarginTop"
+                />
+
+            <TextView
+                android:id="@+id/tvFinalAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1500"
+                android:textSize="@dimen/memberTextSize"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintBottom_toBottomOf="@id/tvFinalAmountTitle"
+                app:layout_constraintLeft_toRightOf="@id/tvFinalAmountTitle"
+                android:layout_marginStart="@dimen/memberMarginBWTitleAndText"
+                />
+
+            <TextView
+                android:id="@+id/tvPaidAmountTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Paid Amount:"
+                android:textSize="@dimen/memberTextSize"
+                android:textStyle="bold"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintBottom_toBottomOf="@id/tvFinalAmount"
+                app:layout_constraintLeft_toLeftOf="@id/tvEndDateTitle"
+                />
+
+            <TextView
+                android:id="@+id/tvPaidAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1000"
+                android:textSize="@dimen/memberTextSize"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintBottom_toBottomOf="@id/tvPaidAmountTitle"
+                app:layout_constraintLeft_toRightOf="@id/tvPaidAmountTitle"
+                android:layout_marginLeft="@dimen/memberMarginBWTitleAndText"
+                />
+
+            <TextView
+                android:id="@+id/tvPlanTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Plan:"
+                android:textSize="@dimen/memberTextSize"
+                android:textStyle="bold"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintTop_toBottomOf="@id/tvFinalAmountTitle"
+                app:layout_constraintLeft_toLeftOf="@id/tvFinalAmountTitle"
+                android:layout_marginTop="@dimen/memberMarginTop"
+                />
+
+            <TextView
+                android:id="@+id/tvPlan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1 month"
+                android:textSize="@dimen/memberTextSize"
+                android:textColor="@color/clrDarkestBlue"
+                app:layout_constraintBottom_toBottomOf="@id/tvPlanTitle"
+                app:layout_constraintLeft_toRightOf="@id/tvPlanTitle"
+                android:layout_marginStart="@dimen/memberMarginBWTitleAndText"
+                />
+
+            <TextView
+                android:id="@+id/tvDueAmountTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Due Amount:"
+                android:textSize="@dimen/memberTextSize"
+                android:textStyle="bold"
+                android:textColor="@color/clrRed"
+                app:layout_constraintBottom_toBottomOf="@id/tvPlan"
+                app:layout_constraintLeft_toLeftOf="@id/tvPaidAmountTitle"
+                />
+
+            <TextView
+                android:id="@+id/tvDueAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="500"
+                android:textSize="@dimen/memberTextSize"
+                android:textColor="@color/clrRed"
+                app:layout_constraintBottom_toBottomOf="@id/tvDueAmountTitle"
+                app:layout_constraintLeft_toRightOf="@id/tvDueAmountTitle"
+                android:layout_marginStart="@dimen/memberMarginBWTitleAndText"
+                />
+
+            <View
+                android:id="@+id/horizontalLine"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/clrLightBlue"
+                app:layout_constraintTop_toBottomOf="@id/tvDueAmount"
+                android:layout_marginTop="10dp"
+
+                />
+
+            <ImageButton
+                android:id="@+id/ibProfileButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/baseline_person_outline_24"
+                android:background="@color/clrSea"
+                app:layout_constraintTop_toBottomOf="@id/horizontalLine"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/ibEditButton"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Profile"
+                app:layout_constraintTop_toBottomOf="@id/ibProfileButton"
+                app:layout_constraintLeft_toLeftOf="@id/ibProfileButton"
+                app:layout_constraintRight_toRightOf="@id/ibProfileButton"/>
+
+
+            <ImageButton
+                android:id="@+id/ibEditButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_person_outline_24"
+                android:background="@color/clrSea"
+                app:layout_constraintTop_toTopOf="@id/ibProfileButton"
+                app:layout_constraintLeft_toRightOf="@id/ibProfileButton"
+                app:layout_constraintRight_toLeftOf="@id/ibRenewButton"
+
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                app:layout_constraintTop_toBottomOf="@id/ibEditButton"
+                app:layout_constraintLeft_toLeftOf="@id/ibEditButton"
+                app:layout_constraintRight_toRightOf="@id/ibEditButton"/>
+
+            <ImageButton
+                android:id="@+id/ibRenewButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_person_outline_24"
+                android:background="@color/clrSea"
+                app:layout_constraintTop_toTopOf="@id/ibEditButton"
+                app:layout_constraintLeft_toRightOf="@id/ibEditButton"
+                app:layout_constraintRight_toLeftOf="@id/ibDeleteButton"
+
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Renew"
+                app:layout_constraintTop_toBottomOf="@id/ibRenewButton"
+                app:layout_constraintLeft_toLeftOf="@id/ibRenewButton"
+                app:layout_constraintRight_toRightOf="@id/ibRenewButton"/>
+
+            <ImageButton
+                android:id="@+id/ibDeleteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_person_outline_24"
+                android:background="@color/clrSea"
+                app:layout_constraintTop_toTopOf="@id/ibRenewButton"
+                app:layout_constraintLeft_toRightOf="@id/ibRenewButton"
+                app:layout_constraintRight_toRightOf="parent"
+
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete"
+                app:layout_constraintTop_toBottomOf="@id/ibDeleteButton"
+                app:layout_constraintLeft_toLeftOf="@id/ibDeleteButton"
+                app:layout_constraintRight_toRightOf="@id/ibDeleteButton"/>
+
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <include
+        layout="@layout/constraint_guidelines"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

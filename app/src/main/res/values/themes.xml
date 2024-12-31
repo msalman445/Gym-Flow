@@ -1,0 +1,13 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.GymManagementSystem" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="android:statusBarColor">@color/clrDarkBlue</item>
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.GymManagementSystem" parent="Base.Theme.GymManagementSystem" />
+    <style name="Theme.App.Splash" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:statusBarColor">@color/clrLightPink</item>
+    </style>
+</resources>

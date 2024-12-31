@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="mainLayoutCardWidth">100dp</dimen>
+    <dimen name="mainLayoutCardHeight">130dp</dimen>
+    <dimen name="mainLayoutCardIcon">35dp</dimen>
+    <dimen name="mainLayoutCardTextSize">14sp</dimen>
+    <dimen name="mainLayoutCardInMargin">3dp</dimen>
+
+<!--    Member Recycler View Dimensions-->
+    <dimen name="memberImageSize">80dp</dimen>
+    <dimen name="memberTextSize">14sp</dimen>
+    <dimen name="memberMarginBWTitleAndText">5dp</dimen>
+    <dimen name="memberMarginTop">10dp</dimen>
+</resources>
