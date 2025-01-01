@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import androidx.activity.EdgeToEdge;
@@ -23,20 +25,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     Toolbar topAppBar;
+    View headerView;
     NavigationView navigationView;
     DrawerLayout drawerLayout;
     RecyclerView rvMainCards;
     Button btnClick;
+    TextView tvHeaderName, tvHeaderEmail;
+    private FirebaseAuth firebaseAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //        Firebase initialization
+        firebaseAuth = FirebaseHelper.getFirebaseAuthInstance();
 
 //        Find Views By Id's
         topAppBar = findViewById(R.id.topAppBar);
@@ -44,6 +54,16 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawerLayout);
         rvMainCards = findViewById(R.id.rvMainCards);
         btnClick = findViewById(R.id.btnClick);
+
+        headerView = navigationView.getHeaderView(0);
+
+        tvHeaderName = headerView.findViewById(R.id.tvHeaderName);
+        tvHeaderEmail = headerView.findViewById(R.id.tvHeaderEmail);
+
+//        tvHeaderName.setText(firebaseAuth.getCurrentUser().get);
+        tvHeaderEmail.setText(firebaseAuth.getCurrentUser().getEmail());
+
+
 
 
 //        Set Action Bar
@@ -61,7 +81,16 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                return false;
+                int id = item.getItemId();
+                if (id == R.id.itmLogout){
+                    firebaseAuth.signOut();
+                    Toast.makeText(MainActivity.this, "Logout", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                }
+                return true;
             }
         });
 
@@ -79,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
 
     }
 

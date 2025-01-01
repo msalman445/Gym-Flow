@@ -16,12 +16,18 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import org.w3c.dom.Text;
 
 public class SignUpActivity extends AppCompatActivity {
     TextView tvLogin;
     EditText etName, etEmail, etPassword;
     Button btnSignUp;
+    private FirebaseAuth mFirebaseAuth;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -36,6 +42,9 @@ public class SignUpActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         btnSignUp = findViewById(R.id.btnSignUp);
 
+//        Firebase Initialization
+        mFirebaseAuth = FirebaseHelper.getFirebaseAuthInstance();
+
 
 //        Click Listeners
         tvLogin.setOnClickListener(new View.OnClickListener() {
@@ -45,12 +54,17 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
+
+
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 validate();
+
             }
         });
+
+
     }
 
     private void validate(){
@@ -71,6 +85,15 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void signUpUser(String name, String email, String password) {
         // You can replace this with Firebase Authentication or other logic
-        Toast.makeText(SignUpActivity.this, "Logging in with email: " + email, Toast.LENGTH_SHORT).show();
+        mFirebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()){
+                FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                Toast.makeText(SignUpActivity.this, "Sign in Please", Toast.LENGTH_SHORT).show();
+                finish();
+            }else {
+                Toast.makeText(SignUpActivity.this, "Authentication Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }) ;
     }
+
 }

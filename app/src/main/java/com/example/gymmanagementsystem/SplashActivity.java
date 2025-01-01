@@ -26,7 +26,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
 
-        isLoggedIn = false;
+        isLoggedIn = FirebaseHelper.getFirebaseAuthInstance().getCurrentUser() != null;
 
 
 
@@ -36,8 +36,7 @@ public class SplashActivity extends AppCompatActivity {
                intent = new Intent(SplashActivity.this, MainActivity.class);
 
             }else{
-                intent = new Intent(SplashActivity.this, AddMemberActivity.class);
-
+                intent = new Intent(SplashActivity.this, LoginActivity.class);
             }
             startActivity(intent);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

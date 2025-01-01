@@ -25,8 +25,9 @@
         app:layout_constraintBottom_toBottomOf="@id/ivDrawerHeader"
         app:layout_constraintLeft_toLeftOf="@id/ivDrawerHeader"
         />
+
         <TextView
-            android:id="@+id/tvHeaderName"
+        android:id="@+id/tvHeaderName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Muhammad Salman"

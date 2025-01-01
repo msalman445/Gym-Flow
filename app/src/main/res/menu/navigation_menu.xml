@@ -42,4 +42,10 @@
         android:id="@+id/itmSettings"
         android:title="Settings"
         />
+
+    <item
+        android:id="@+id/itmLogout"
+        android:title="Logout"
+        android:icon="@drawable/baseline_logout_24"
+        />
 </menu>
