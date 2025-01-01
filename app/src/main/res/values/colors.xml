@@ -7,7 +7,8 @@
     <color name="clrDarkBlue">#748DA6</color>
     <color name="clrLightBlue">#9CB4CC</color>
     <color name="clrSea">#D3CEDF</color>
-    <color name="clrLightPink">#F2D7D9</color>
+<!--    <color name="clrLightPink">#F2D7D9</color>-->
+    <color name="clrLightPink">#EDE0E2</color>
 
     <color name="clrRed">#E91E63</color>
 

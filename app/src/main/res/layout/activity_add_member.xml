@@ -5,7 +5,10 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddMemberActivity">
+    tools:context=".AddMemberActivity"
+    android:background="@color/clrLightPink"
+
+    >
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/topAppBarLayout"
@@ -64,7 +67,8 @@
                     android:id="@+id/etName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:autofillHints="name"/>
+                    android:autofillHints="name"
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -88,7 +92,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="phone"
-                    android:autofillHints="phone"/>
+                    android:autofillHints="phone"
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -108,7 +113,8 @@
                     android:id="@+id/etAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:autofillHints="postalAddress"/>
+                    android:autofillHints="postalAddress"
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
 

@@ -36,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
 
 //        Firebase initialization
-        firebaseAuth = FirebaseHelper.getFirebaseAuthInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
 
 //        Click Listeners
         tvSignUp.setOnClickListener(new View.OnClickListener() {

@@ -1,7 +1,9 @@
 package com.example.gymmanagementsystem;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
@@ -14,15 +16,24 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 
 public class AddMemberActivity extends AppCompatActivity {
     final Calendar calendar = Calendar.getInstance();
@@ -32,20 +43,33 @@ public class AddMemberActivity extends AppCompatActivity {
     Toolbar toolbar;
     Button btnSubmit;
 
+    static final String MEMBER = "members";
+    static final String APP_USER = "users";
+
+    private FirebaseAuth firebaseAuth;
+    private String appUserId;
+    private String gender = "Male";
+
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_member);
 
-        etStartDatePicker = findViewById(R.id.etStartDatePicker);
-        etEndDatePicker = findViewById(R.id.etEndDatePicker);
+//        Firebase initialization
+        firebaseAuth = FirebaseAuth.getInstance();
+        appUserId = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
+
+//        Find Views By id's
         etName = findViewById(R.id.etName);
         etPhoneNumber = findViewById(R.id.etPhoneNumber);
         etAddress = findViewById(R.id.etAddress);
         etPlanName = findViewById(R.id.etPlanName);
         etPlanAmount = findViewById(R.id.etPlanAmount);
         etPaidAmount = findViewById(R.id.etPaidAmount);
+        etStartDatePicker = findViewById(R.id.etStartDatePicker);
+        etEndDatePicker = findViewById(R.id.etEndDatePicker);
 
         radioGroup = findViewById(R.id.radioGroup);
         radioButtonMale = findViewById(R.id.radioButtonMale);
@@ -55,6 +79,8 @@ public class AddMemberActivity extends AppCompatActivity {
 
         btnSubmit = findViewById(R.id.btnSubmit);
 
+//        Click Listeners
+        etStartDatePicker.setText(getCurrentDate());
         etStartDatePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,7 +100,7 @@ public class AddMemberActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton selectedRadioButton = findViewById(checkedId);
-                Toast.makeText(AddMemberActivity.this, ""+selectedRadioButton.getText().toString() , Toast.LENGTH_SHORT).show();
+                gender = selectedRadioButton.getText().toString();
             }
         });
 
@@ -85,6 +111,7 @@ public class AddMemberActivity extends AppCompatActivity {
             }
         });
 
+//      Form Submission
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,7 +144,7 @@ public class AddMemberActivity extends AppCompatActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat(myFormat, Locale.US);
         editText.setText(dateFormat.format(calendar.getTime()));
     }
-
+//  Form Validation
     private void validateForm(){
         String name = etName.getText().toString().trim();
         String phoneNumber = etPhoneNumber.getText().toString().trim();
@@ -146,8 +173,69 @@ public class AddMemberActivity extends AppCompatActivity {
         } else if (endDate.isEmpty()) {
             Toast.makeText(this, "Please select end date", Toast.LENGTH_SHORT).show();
         }else{
-            Toast.makeText(this, "Wow Nice", Toast.LENGTH_SHORT).show();
+            long timestamp = System.currentTimeMillis();  // Store the current timestamp
+            Member member = new Member(timestamp ,gender ,endDate, startDate, Double.parseDouble(paidAmount), Double.parseDouble(planAmount), planName, address, phoneNumber, name);
+            saveMemberToFirebase(member);
         }
+    }
+//      Save data to firebase
+    private void saveMemberToFirebase(Member member){
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+//        Generate a unique id for each member
+        String memberId = databaseReference.child(APP_USER).child(appUserId).child(MEMBER).push().getKey();
+
+//        Save member under the generated id
+        if (memberId != null){
+            databaseReference.child(APP_USER).child(appUserId).child(MEMBER).child(memberId).setValue(member).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    clearTextFields();
+                    showAlertDialog("Success", "Member Added Successfully", "OK", R.drawable.checked);
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    showAlertDialog("Failure", "Member Not Inserted: " + e.getMessage(), "Retry", R.drawable.cancel);
+
+                }
+            });
+        }
+    }
+
+    private void showAlertDialog(String title, String message, String buttonText, int iconId){
+        new AlertDialog.Builder(AddMemberActivity.this).setTitle(title).setMessage(message).setPositiveButton(buttonText, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).setCancelable(false).setIcon(iconId).show();
+    }
+
+    private void clearTextFields(){
+        etName.setText("");
+        etPhoneNumber.setText("");
+        etAddress.setText("");
+        etPlanName.setText("");
+        etPlanAmount.setText("");
+        etPaidAmount.setText("");
+        etStartDatePicker.setText(getCurrentDate());
+        etEndDatePicker.setText("");
+        gender = "Male"; // Reset default gender
+
+    }
+
+    private String getCurrentDate(){
+        // Get the current date
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH); // Month is 0-based, so January is 0
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Format the date as "dd/MM/yyyy"
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        return simpleDateFormat.format(calendar.getTime());
     }
 
 

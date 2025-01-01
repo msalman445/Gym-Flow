@@ -43,7 +43,7 @@ public class SignUpActivity extends AppCompatActivity {
         btnSignUp = findViewById(R.id.btnSignUp);
 
 //        Firebase Initialization
-        mFirebaseAuth = FirebaseHelper.getFirebaseAuthInstance();
+        mFirebaseAuth = FirebaseAuth.getInstance();
 
 
 //        Click Listeners

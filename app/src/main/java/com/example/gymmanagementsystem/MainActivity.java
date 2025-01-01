@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //        Firebase initialization
-        firebaseAuth = FirebaseHelper.getFirebaseAuthInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
 
 //        Find Views By Id's
         topAppBar = findViewById(R.id.topAppBar);
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         btnClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                Intent intent = new Intent(MainActivity.this, AddMemberActivity.class);
                 startActivity(intent);
             }
         });
@@ -116,10 +116,15 @@ public class MainActivity extends AppCompatActivity {
 //  Main RecyclerView Data
     private List<MainCard> getData(){
         List<MainCard> cards = new ArrayList<>();
-        cards.add(new MainCard(R.drawable.group, "All Members", 5));
-        cards.add(new MainCard(R.drawable.group, "All Members", 5));
-        cards.add(new MainCard(R.drawable.group, "All Members", 5));
-        cards.add(new MainCard(R.drawable.group, "All Members", 5));
+        cards.add(new MainCard(R.drawable.group, "Add Members", 0));
+        cards.add(new MainCard(R.drawable.group, "Total Members", 5));
+        cards.add(new MainCard(R.drawable.group, "Live Members", 5));
+        cards.add(new MainCard(R.drawable.group, "Expired Members", 5));
+        cards.add(new MainCard(R.drawable.group, "Expiring (1-3 Days)", 5));
+        cards.add(new MainCard(R.drawable.group, "Expiring (4-6 Days)", 5));
+        cards.add(new MainCard(R.drawable.group, "Today Collection", 5));
+        cards.add(new MainCard(R.drawable.group, "Mark Attendance", 5));
+        cards.add(new MainCard(R.drawable.group, "Attendance Report", 5));
 
         return cards;
     }

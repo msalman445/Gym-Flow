@@ -1,5 +1,7 @@
 package com.example.gymmanagementsystem;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class MainCardAdapter extends RecyclerView.Adapter<MainCardAdapter.MainCardViewHolder> {
-    List<MainCard> mainCards;
+    private final List<MainCard> mainCards;
+//    private final Context context;
 
-    public MainCardAdapter(List<MainCard> mainCards){
+    public MainCardAdapter(List<MainCard> mainCards, Context context){
         this.mainCards = mainCards;
+
     }
 
     @NonNull
@@ -31,6 +35,17 @@ public class MainCardAdapter extends RecyclerView.Adapter<MainCardAdapter.MainCa
         holder.ivMainCardIcon.setImageResource(mainCard.getIconId());
         holder.tvMainCardTitle.setText(mainCard.getTitle());
         holder.tvMainCardMembers.setText(String.valueOf(mainCard.getMembers()));
+
+//        holder.itemView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent;
+//                switch (position){
+//                    case 0:
+//                        intent = new Intent(context ,)
+//                }
+//            }
+//        });
     }
 
     @Override

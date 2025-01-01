@@ -13,10 +13,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
     boolean isLoggedIn;
-    private static final int SPLASH_DELAY = 3000;
+    private static final int SPLASH_DELAY = 2000;
 
 
     @Override
@@ -26,7 +28,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
 
-        isLoggedIn = FirebaseHelper.getFirebaseAuthInstance().getCurrentUser() != null;
+        isLoggedIn = FirebaseAuth.getInstance().getCurrentUser() != null;
 
 
 

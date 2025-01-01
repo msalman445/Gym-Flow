@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="mainLayoutCardWidth">100dp</dimen>
-    <dimen name="mainLayoutCardHeight">130dp</dimen>
+    <dimen name="mainLayoutCardWidth">105dp</dimen>
+    <dimen name="mainLayoutCardHeight">140dp</dimen>
     <dimen name="mainLayoutCardIcon">35dp</dimen>
     <dimen name="mainLayoutCardTextSize">14sp</dimen>
     <dimen name="mainLayoutCardInMargin">3dp</dimen>
