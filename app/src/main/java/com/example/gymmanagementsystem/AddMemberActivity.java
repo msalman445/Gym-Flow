@@ -43,8 +43,7 @@ public class AddMemberActivity extends AppCompatActivity {
     Toolbar toolbar;
     Button btnSubmit;
 
-    static final String MEMBER = "members";
-    static final String APP_USER = "users";
+
 
     private FirebaseAuth firebaseAuth;
     private String appUserId;
@@ -183,11 +182,11 @@ public class AddMemberActivity extends AppCompatActivity {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
 //        Generate a unique id for each member
-        String memberId = databaseReference.child(APP_USER).child(appUserId).child(MEMBER).push().getKey();
+        String memberId = databaseReference.child(FirebaseHelper.APP_USERS).child(appUserId).child(FirebaseHelper.MEMBERS).push().getKey();
 
 //        Save member under the generated id
         if (memberId != null){
-            databaseReference.child(APP_USER).child(appUserId).child(MEMBER).child(memberId).setValue(member).addOnSuccessListener(new OnSuccessListener<Void>() {
+            databaseReference.child(FirebaseHelper.APP_USERS).child(appUserId).child(FirebaseHelper.MEMBERS).child(memberId).setValue(member).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void unused) {
                     clearTextFields();

@@ -1,9 +1,12 @@
 package com.example.gymmanagementsystem;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -26,9 +29,20 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     Toolbar topAppBar;
@@ -36,9 +50,13 @@ public class MainActivity extends AppCompatActivity {
     NavigationView navigationView;
     DrawerLayout drawerLayout;
     RecyclerView rvMainCards;
-    Button btnClick;
     TextView tvHeaderName, tvHeaderEmail;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference databaseReference;
+    String currentUserId;
+    long totalMembers = 0;
+    List<MainCard> mainCardsList;
+    MainCardAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,13 +65,14 @@ public class MainActivity extends AppCompatActivity {
 
         //        Firebase initialization
         firebaseAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        currentUserId = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
 
 //        Find Views By Id's
         topAppBar = findViewById(R.id.topAppBar);
         navigationView = findViewById(R.id.navigationView);
         drawerLayout = findViewById(R.id.drawerLayout);
         rvMainCards = findViewById(R.id.rvMainCards);
-        btnClick = findViewById(R.id.btnClick);
 
         headerView = navigationView.getHeaderView(0);
 
@@ -96,18 +115,34 @@ public class MainActivity extends AppCompatActivity {
 
 //       Main RecyclerView
 //        int spanCount = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 4:3;
-        rvMainCards.setAdapter(new MainCardAdapter(getData()));
+        mainCardsList = getData();
+        adapter = new MainCardAdapter(mainCardsList, MainActivity.this);
+        rvMainCards.setAdapter(adapter);
         rvMainCards.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
         rvMainCards.setHasFixedSize(true);
         rvMainCards.addItemDecoration(new GridSpacingItemDecoration(3, 22));
 
-        btnClick.setOnClickListener(new View.OnClickListener() {
+        adapter.setIOnMainCardClickListener(new MainCardAdapter.IOnMainCardClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddMemberActivity.class);
+            public void onMainCardClick(MainCardAdapter.MainCardViewHolder holder, int position) {
+                Intent intent;
+                switch (position){
+                    case 0:
+                        intent = new Intent(MainActivity.this, AddMemberActivity.class);
+                        break;
+                    default:
+                        intent = new Intent(MainActivity.this, MembersActivity.class);
+
+                }
                 startActivity(intent);
+
             }
         });
+
+
+
+
+
 
 
     }
@@ -117,16 +152,141 @@ public class MainActivity extends AppCompatActivity {
     private List<MainCard> getData(){
         List<MainCard> cards = new ArrayList<>();
         cards.add(new MainCard(R.drawable.group, "Add Members", 0));
-        cards.add(new MainCard(R.drawable.group, "Total Members", 5));
-        cards.add(new MainCard(R.drawable.group, "Live Members", 5));
-        cards.add(new MainCard(R.drawable.group, "Expired Members", 5));
-        cards.add(new MainCard(R.drawable.group, "Expiring (1-3 Days)", 5));
-        cards.add(new MainCard(R.drawable.group, "Expiring (4-6 Days)", 5));
-        cards.add(new MainCard(R.drawable.group, "Today Collection", 5));
-        cards.add(new MainCard(R.drawable.group, "Mark Attendance", 5));
-        cards.add(new MainCard(R.drawable.group, "Attendance Report", 5));
+        cards.add(new MainCard(R.drawable.group, "Total Members", 0));
+        cards.add(new MainCard(R.drawable.group, "Live Members", 0));
+        cards.add(new MainCard(R.drawable.group, "Expired Members", 0));
+        cards.add(new MainCard(R.drawable.group, "Due Amount Members", 0));
+        cards.add(new MainCard(R.drawable.group, "Today's Collection", 0));
+        cards.add(new MainCard(R.drawable.group, "Mark Attendance", 0));
+        cards.add(new MainCard(R.drawable.group, "Attendance Report", 0));
 
         return cards;
     }
 
+    private long getMembers(final ITotalMembersCallback callback){
+        databaseReference.child(FirebaseHelper.APP_USERS).child(currentUserId).child(FirebaseHelper.MEMBERS).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                long totalMembers = snapshot.getChildrenCount();
+                callback.onTotalMembersReceived(totalMembers);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onError(error.toException());
+            }
+
+        });
+        Toast.makeText(this, "Outside:"+ totalMembers, Toast.LENGTH_SHORT).show();
+
+        return totalMembers;
+    }
+
+
+
+
+    private void updateCardMemberCount(String userId, String cardTitle, List<MainCard> cards, RecyclerView.Adapter adapter) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        databaseReference.child("users").child(userId).child("members")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        long count = 0;
+
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy", Locale.getDefault());
+                        Date currentDate = new Date();
+
+
+                        // Calculate based on the card title
+                        if (cardTitle.equals("Total Members")) {
+                            count = snapshot.getChildrenCount();
+                        }
+                        else if (cardTitle.equals("Live Members")) {
+                            for (DataSnapshot memberSnapshot : snapshot.getChildren()) {
+                                String endDateStr = memberSnapshot.child("endDate").getValue(String.class);
+                                try {
+                                    Date endDate = sdf.parse(endDateStr);
+                                    if (currentDate.before(endDate)) {
+                                        count++;
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        else if (cardTitle.equals("Expired Members")) {
+                            for (DataSnapshot memberSnapshot : snapshot.getChildren()) {
+                                String endDateStr = memberSnapshot.child("endDate").getValue(String.class);
+                                try {
+                                    Date endDate = sdf.parse(endDateStr);
+                                    if (endDate.before(currentDate)) {
+                                        count++;
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+                        else if (cardTitle.equals("Due Amount Members")) {
+                            for (DataSnapshot memberSnapshot : snapshot.getChildren()) {
+                                // Get the paid amount and plan amount from Firebase
+                                Double paidAmount = memberSnapshot.child("paidAmount").getValue(Double.class);
+                                Double planAmount = memberSnapshot.child("planAmount").getValue(Double.class);
+
+                                // Check if paidAmount is less than planAmount
+                                if (paidAmount != null && planAmount != null && paidAmount < planAmount) {
+                                    count++;
+                                }
+                            }
+                        } else if (cardTitle.equals("Today's Collection")) {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                            String currentDateStr = simpleDateFormat.format(new Date());  // Get today's date as a string
+
+                            for (DataSnapshot memberSnapshot : snapshot.getChildren()) {
+                                String startDateStr = memberSnapshot.child("startDate").getValue(String.class);
+
+                                // Check if the startDate is today's date
+                                if (startDateStr != null && startDateStr.equals(currentDateStr)) {
+                                    count++;
+                                }
+                            }
+                        }
+
+
+
+                        // Update the relevant card
+                        for (MainCard card : cards) {
+                            if (card.getTitle().equals(cardTitle)) {
+                                card.setMembers(count);
+                                break;
+                            }
+                        }
+
+                        // Notify the adapter of the change
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("FirebaseError", error.getMessage());
+                    }
+                });
+    }
+
+
+
+
+    @Override
+    protected void onResume() {
+//        updateTotalMembersCount(currentUserId, mainCardsList,adapter );
+        updateCardMemberCount(currentUserId, "Total Members", mainCardsList, adapter);
+        updateCardMemberCount(currentUserId, "Live Members", mainCardsList, adapter);
+        updateCardMemberCount(currentUserId, "Expired Members", mainCardsList, adapter);
+        updateCardMemberCount(currentUserId, "Expiring (1-3 Days)", mainCardsList, adapter);
+        updateCardMemberCount(currentUserId, "Due Amount Members", mainCardsList, adapter);
+        updateCardMemberCount(currentUserId, "Today's Collection", mainCardsList, adapter);
+        super.onResume();
+    }
 }

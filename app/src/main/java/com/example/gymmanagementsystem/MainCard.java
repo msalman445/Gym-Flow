@@ -3,12 +3,12 @@ package com.example.gymmanagementsystem;
 public class MainCard {
     private int iconId;
     private String title;
-    private int members;
+    private long members;
 
     public MainCard() {
     }
 
-    public MainCard(int iconId, String title, int members) {
+    public MainCard(int iconId, String title, long members) {
         this.iconId = iconId;
         this.title = title;
         this.members = members;
@@ -30,11 +30,11 @@ public class MainCard {
         this.title = title;
     }
 
-    public int getMembers() {
+    public long getMembers() {
         return members;
     }
 
-    public void setMembers(int members) {
+    public void setMembers(long members) {
         this.members = members;
     }
 }
