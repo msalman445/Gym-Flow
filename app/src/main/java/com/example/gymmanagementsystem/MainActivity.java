@@ -126,9 +126,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMainCardClick(MainCardAdapter.MainCardViewHolder holder, int position) {
                 Intent intent;
+                Toast.makeText(MainActivity.this, "position" + position, Toast.LENGTH_SHORT).show();
                 switch (position){
                     case 0:
                         intent = new Intent(MainActivity.this, AddMemberActivity.class);
+                        break;
+                    case 1:
+                        intent = new Intent(MainActivity.this, MembersActivity.class);
+                        intent.putExtra("CARD_INDEX", 1);
+                        break;
+                    case 2:
+                        intent = new Intent(MainActivity.this, MembersActivity.class);
+                        intent.putExtra("CARD_INDEX", 2);
+                        break;
+                    case 3:
+                        intent = new Intent(MainActivity.this, MembersActivity.class);
+                        intent.putExtra("CARD_INDEX", 3);
+                        break;
+                    case 4:
+                        intent = new Intent(MainActivity.this, MembersActivity.class);
+                        intent.putExtra("CARD_INDEX", 4);
                         break;
                     default:
                         intent = new Intent(MainActivity.this, MembersActivity.class);
@@ -163,24 +180,6 @@ public class MainActivity extends AppCompatActivity {
         return cards;
     }
 
-    private long getMembers(final ITotalMembersCallback callback){
-        databaseReference.child(FirebaseHelper.APP_USERS).child(currentUserId).child(FirebaseHelper.MEMBERS).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                long totalMembers = snapshot.getChildrenCount();
-                callback.onTotalMembersReceived(totalMembers);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                callback.onError(error.toException());
-            }
-
-        });
-        Toast.makeText(this, "Outside:"+ totalMembers, Toast.LENGTH_SHORT).show();
-
-        return totalMembers;
-    }
 
 
 
@@ -280,7 +279,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-//        updateTotalMembersCount(currentUserId, mainCardsList,adapter );
         updateCardMemberCount(currentUserId, "Total Members", mainCardsList, adapter);
         updateCardMemberCount(currentUserId, "Live Members", mainCardsList, adapter);
         updateCardMemberCount(currentUserId, "Expired Members", mainCardsList, adapter);

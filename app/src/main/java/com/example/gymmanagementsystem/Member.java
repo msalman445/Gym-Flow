@@ -18,8 +18,18 @@ public class Member {
     public Member() {
     }
 
-    public Member(long timeStamp ,String gender,String endDate, String startDate, double paidAmount, double planAmount, String planName, String address, String phoneNumber, String name) {
-        this.timeStamp = timeStamp;
+    public Member(String name, String phoneNumber, String address, String planName, double planAmount, double paidAmount, String startDate, String endDate) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.planName = planName;
+        this.planAmount = planAmount;
+        this.paidAmount = paidAmount;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public Member(long timeStamp , String gender, String endDate, String startDate, double paidAmount, double planAmount, String planName, String address, String phoneNumber, String name) {
         this.gender = gender;
         this.endDate = endDate;
         this.startDate = startDate;

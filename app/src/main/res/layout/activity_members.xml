@@ -27,4 +27,14 @@
 
     <include layout="@layout/constraint_guidelines"/>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMemberCards"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/topAppBarLayout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:paddingBottom="60dp"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

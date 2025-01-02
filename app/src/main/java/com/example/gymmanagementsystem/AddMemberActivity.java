@@ -233,7 +233,7 @@ public class AddMemberActivity extends AppCompatActivity {
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         // Format the date as "dd/MM/yyyy"
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yy", Locale.getDefault());
         return simpleDateFormat.format(calendar.getTime());
     }
 
