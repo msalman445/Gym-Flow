@@ -26,17 +26,17 @@
         app:layout_constraintLeft_toLeftOf="@id/ivDrawerHeader"
         />
 
-        <TextView
-        android:id="@+id/tvHeaderName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Muhammad Salman"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:paddingLeft="10dp"
-        app:layout_constraintBottom_toTopOf="@id/tvHeaderEmail"
-        app:layout_constraintLeft_toLeftOf="@id/ivDrawerHeader"
-        />
+<!--        <TextView-->
+<!--        android:id="@+id/tvHeaderName"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Muhammad Salman"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="20sp"-->
+<!--        android:paddingLeft="10dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/tvHeaderEmail"-->
+<!--        app:layout_constraintLeft_toLeftOf="@id/ivDrawerHeader"-->
+<!--        />-->
 
 
 

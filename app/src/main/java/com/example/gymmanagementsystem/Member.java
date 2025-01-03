@@ -1,6 +1,7 @@
 package com.example.gymmanagementsystem;
 
 public class Member {
+    private String memberId;
     private String name;
     private String phoneNumber;
     private String address;
@@ -16,6 +17,20 @@ public class Member {
 
 
     public Member() {
+    }
+
+    public Member(String memberId, String name, String phoneNumber, String address, String planName, double planAmount, double paidAmount, String startDate, String endDate, String gender, long timeStamp) {
+        this.memberId = memberId;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.planName = planName;
+        this.planAmount = planAmount;
+        this.paidAmount = paidAmount;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.gender = gender;
+        this.timeStamp = timeStamp;
     }
 
     public Member(String name, String phoneNumber, String address, String planName, double planAmount, double paidAmount, String startDate, String endDate) {
@@ -121,5 +136,13 @@ public class Member {
 
     public void setTimeStamp(long timeStamp) {
         this.timeStamp = timeStamp;
+    }
+
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
     }
 }

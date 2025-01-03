@@ -20,8 +20,12 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.w3c.dom.Text;
+
+import java.util.HashMap;
 
 public class SignUpActivity extends AppCompatActivity {
     TextView tvLogin;
@@ -88,12 +92,34 @@ public class SignUpActivity extends AppCompatActivity {
         mFirebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
             if (task.isSuccessful()){
                 FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                Toast.makeText(SignUpActivity.this, "Sign in Please", Toast.LENGTH_SHORT).show();
+                if (user != null){
+                    saveUserName(user.getUid(), name);
+                }
+                Toast.makeText(SignUpActivity.this, "To Continue, Sign in Please", Toast.LENGTH_SHORT).show();
                 finish();
             }else {
                 Toast.makeText(SignUpActivity.this, "Authentication Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
             }
         }) ;
+    }
+
+    private void saveUserName(String userId, String name) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference(FirebaseHelper.APP_USERS)
+                .child(userId);
+
+        // Create a HashMap for user data
+        HashMap<String, Object> userMap = new HashMap<>();
+        userMap.put("name", name);
+
+        databaseReference.setValue(userMap)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        finish(); // Close the activity
+                    } else {
+                        Toast.makeText(this, "Failed to save user: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 }

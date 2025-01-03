@@ -1,35 +1,24 @@
 package com.example.gymmanagementsystem;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     Toolbar topAppBar;
@@ -50,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     NavigationView navigationView;
     DrawerLayout drawerLayout;
     RecyclerView rvMainCards;
-    TextView tvHeaderName, tvHeaderEmail;
+    TextView tvHeaderEmail;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
     String currentUserId;
@@ -76,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         headerView = navigationView.getHeaderView(0);
 
-        tvHeaderName = headerView.findViewById(R.id.tvHeaderName);
+//        tvHeaderName = headerView.findViewById(R.id.tvHeaderName);
         tvHeaderEmail = headerView.findViewById(R.id.tvHeaderEmail);
 
 //        tvHeaderName.setText(firebaseAuth.getCurrentUser().get);
@@ -103,30 +93,37 @@ public class MainActivity extends AppCompatActivity {
                 int id = item.getItemId();
                 if (id == R.id.itmLogout){
                     firebaseAuth.signOut();
-                    Toast.makeText(MainActivity.this, "Logout", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Log Out", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
+                } else if (id == R.id.itmShare) {
+                    String appLink = "https://play.google.com/store/apps/details?id=" + getPackageName();
 
+                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                    shareIntent.setType("text/plain");
+                    shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Check out this amazing app!");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Hey! Download this app: " + appLink);
+
+                    startActivity(Intent.createChooser(shareIntent, "Share App via"));
                 }
                 return true;
             }
         });
 
 //       Main RecyclerView
-//        int spanCount = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 4:3;
+        int spanCount = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 5:3;
         mainCardsList = getData();
         adapter = new MainCardAdapter(mainCardsList, MainActivity.this);
         rvMainCards.setAdapter(adapter);
-        rvMainCards.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
+        rvMainCards.setLayoutManager(new StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL));
         rvMainCards.setHasFixedSize(true);
-        rvMainCards.addItemDecoration(new GridSpacingItemDecoration(3, 22));
+        rvMainCards.addItemDecoration(new GridSpacingItemDecoration(spanCount, 22));
 
         adapter.setIOnMainCardClickListener(new MainCardAdapter.IOnMainCardClickListener() {
             @Override
             public void onMainCardClick(MainCardAdapter.MainCardViewHolder holder, int position) {
                 Intent intent;
-                Toast.makeText(MainActivity.this, "position" + position, Toast.LENGTH_SHORT).show();
                 switch (position){
                     case 0:
                         intent = new Intent(MainActivity.this, AddMemberActivity.class);
@@ -146,6 +143,18 @@ public class MainActivity extends AppCompatActivity {
                     case 4:
                         intent = new Intent(MainActivity.this, MembersActivity.class);
                         intent.putExtra("CARD_INDEX", 4);
+                        break;
+                    case 5:
+                        intent = new Intent(MainActivity.this, MembersActivity.class);
+                        intent.putExtra("CARD_INDEX", 5);
+                        break;
+                    case 6:
+                        intent = new Intent(MainActivity.this, MembersActivity.class);
+                        intent.putExtra("CARD_INDEX", 6);
+                        break;
+
+                    case 7:
+                        intent = new Intent(MainActivity.this, TodaysCollectionActivity.class);
                         break;
                     default:
                         intent = new Intent(MainActivity.this, MembersActivity.class);
@@ -168,14 +177,15 @@ public class MainActivity extends AppCompatActivity {
 //  Main RecyclerView Data
     private List<MainCard> getData(){
         List<MainCard> cards = new ArrayList<>();
-        cards.add(new MainCard(R.drawable.group, "Add Members", 0));
+        cards.add(new MainCard(R.drawable.add_user, "Add Members", 0));
         cards.add(new MainCard(R.drawable.group, "Total Members", 0));
-        cards.add(new MainCard(R.drawable.group, "Live Members", 0));
-        cards.add(new MainCard(R.drawable.group, "Expired Members", 0));
-        cards.add(new MainCard(R.drawable.group, "Due Amount Members", 0));
-        cards.add(new MainCard(R.drawable.group, "Today's Collection", 0));
-        cards.add(new MainCard(R.drawable.group, "Mark Attendance", 0));
-        cards.add(new MainCard(R.drawable.group, "Attendance Report", 0));
+        cards.add(new MainCard(R.drawable.live, "Live Members", 0));
+        cards.add(new MainCard(R.drawable.expired, "Expired Members", 0));
+        cards.add(new MainCard(R.drawable.expiring, "Expiring (1-3 days)", 0));
+        cards.add(new MainCard(R.drawable.expiring, "Expiring (4-7 days)", 0));
+        cards.add(new MainCard(R.drawable.due_amount, "Due Amount Members", 0));
+        cards.add(new MainCard(R.drawable.money, "Today's Collection", 0));
+
 
         return cards;
     }
@@ -227,6 +237,82 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         }
+                        else if (cardTitle.equals("Expiring (1-3 days)")) {
+                            for (DataSnapshot memberSnapshot : snapshot.getChildren()) {
+                                String endDateStr = memberSnapshot.child("endDate").getValue(String.class);
+                                try {
+                                    Date endDate = sdf.parse(endDateStr);
+
+                                    // Normalize current date
+                                    Calendar currentCal = Calendar.getInstance();
+                                    currentCal.setTime(currentDate);
+                                    currentCal.set(Calendar.HOUR_OF_DAY, 0);
+                                    currentCal.set(Calendar.MINUTE, 0);
+                                    currentCal.set(Calendar.SECOND, 0);
+                                    currentCal.set(Calendar.MILLISECOND, 0);
+
+                                    // Create range for 1 to 3 days from now
+                                    Calendar dayAfterTomorrowCal = (Calendar) currentCal.clone();
+                                    dayAfterTomorrowCal.add(Calendar.DAY_OF_YEAR, 3);
+
+                                    Calendar tomorrowCal = (Calendar) currentCal.clone();
+                                    tomorrowCal.add(Calendar.DAY_OF_YEAR, 1);
+
+                                    // Check if the endDate is in the range of tomorrow to day after tomorrow
+                                    Calendar endCal = Calendar.getInstance();
+                                    endCal.setTime(endDate);
+                                    endCal.set(Calendar.HOUR_OF_DAY, 0);
+                                    endCal.set(Calendar.MINUTE, 0);
+                                    endCal.set(Calendar.SECOND, 0);
+                                    endCal.set(Calendar.MILLISECOND, 0);
+
+                                    if (!endCal.before(tomorrowCal) && !endCal.after(dayAfterTomorrowCal)) {
+                                        count++;
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        else if (cardTitle.equals("Expiring (4-7 days)")) {
+                            for (DataSnapshot memberSnapshot : snapshot.getChildren()) {
+                                String endDateStr = memberSnapshot.child("endDate").getValue(String.class);
+                                try {
+                                    Date endDate = sdf.parse(endDateStr);
+
+                                    // Normalize current date
+                                    Calendar currentCal = Calendar.getInstance();
+                                    currentCal.setTime(currentDate);
+                                    currentCal.set(Calendar.HOUR_OF_DAY, 0);
+                                    currentCal.set(Calendar.MINUTE, 0);
+                                    currentCal.set(Calendar.SECOND, 0);
+                                    currentCal.set(Calendar.MILLISECOND, 0);
+
+                                    // Create range for 4 to 7 days from now
+                                    Calendar fourDaysFromNowCal = (Calendar) currentCal.clone();
+                                    fourDaysFromNowCal.add(Calendar.DAY_OF_YEAR, 4);
+
+                                    Calendar sevenDaysFromNowCal = (Calendar) currentCal.clone();
+                                    sevenDaysFromNowCal.add(Calendar.DAY_OF_YEAR, 7);
+
+                                    // Check if the endDate is in the range of 4 to 7 days
+                                    Calendar endCal = Calendar.getInstance();
+                                    endCal.setTime(endDate);
+                                    endCal.set(Calendar.HOUR_OF_DAY, 0);
+                                    endCal.set(Calendar.MINUTE, 0);
+                                    endCal.set(Calendar.SECOND, 0);
+                                    endCal.set(Calendar.MILLISECOND, 0);
+
+                                    if (!endCal.before(fourDaysFromNowCal) && !endCal.after(sevenDaysFromNowCal)) {
+                                        count++;
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+
 
                         else if (cardTitle.equals("Due Amount Members")) {
                             for (DataSnapshot memberSnapshot : snapshot.getChildren()) {
@@ -239,19 +325,7 @@ public class MainActivity extends AppCompatActivity {
                                     count++;
                                 }
                             }
-                        } else if (cardTitle.equals("Today's Collection")) {
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                            String currentDateStr = simpleDateFormat.format(new Date());  // Get today's date as a string
-
-                            for (DataSnapshot memberSnapshot : snapshot.getChildren()) {
-                                String startDateStr = memberSnapshot.child("startDate").getValue(String.class);
-
-                                // Check if the startDate is today's date
-                                if (startDateStr != null && startDateStr.equals(currentDateStr)) {
-                                    count++;
-                                }
-                            }
-                        }
+                        } 
 
 
 
@@ -285,6 +359,8 @@ public class MainActivity extends AppCompatActivity {
         updateCardMemberCount(currentUserId, "Expiring (1-3 Days)", mainCardsList, adapter);
         updateCardMemberCount(currentUserId, "Due Amount Members", mainCardsList, adapter);
         updateCardMemberCount(currentUserId, "Today's Collection", mainCardsList, adapter);
+        updateCardMemberCount(currentUserId, "Expiring (1-3 days)", mainCardsList, adapter);
+        updateCardMemberCount(currentUserId, "Expiring (4-7 days)", mainCardsList, adapter);
         super.onResume();
     }
 }

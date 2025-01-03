@@ -1,9 +1,14 @@
 package com.example.gymmanagementsystem;
 
+import static android.content.ContentValues.TAG;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -24,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -63,7 +69,6 @@ public class MembersActivity extends AppCompatActivity {
         Intent intent = getIntent();
         receivedData = intent.getIntExtra("CARD_INDEX", 0);
 
-        Toast.makeText(this, ""+receivedData, Toast.LENGTH_SHORT).show();
 
         if (receivedData == 1){
             topAppBar.setTitle("Total Members");
@@ -72,6 +77,11 @@ public class MembersActivity extends AppCompatActivity {
         }else if (receivedData == 3) {
             topAppBar.setTitle("Expired Members");
         }else if (receivedData == 4) {
+            topAppBar.setTitle("Expiring (1-3 days)");
+        }
+        else if (receivedData == 5) {
+            topAppBar.setTitle("Expiring (4-7 days)");
+        }else if (receivedData == 6) {
             topAppBar.setTitle("Due Amount Members");
         }
 
@@ -85,6 +95,11 @@ public class MembersActivity extends AppCompatActivity {
         rvMemberCards.setAdapter(membersAdapter);
 
         getMembersData();
+
+
+        profileClickListener();
+        deleteClickListener();
+        editClickListener();
 
     }
 
@@ -106,6 +121,7 @@ public class MembersActivity extends AppCompatActivity {
                     for (DataSnapshot data : snapshot.getChildren()) {
                         Member member = data.getValue(Member.class);
                         if (member != null) {
+                            member.setMemberId(data.getKey());
                             String endDateStr = member.getEndDate();
                             switch (receivedData){
                                 case 1:
@@ -135,6 +151,76 @@ public class MembersActivity extends AppCompatActivity {
                                     break;
 
                                 case 4:
+                                    try {
+                                        Date endDate = sdf.parse(endDateStr);
+                                        // Normalize current date
+                                        Calendar currentCal = Calendar.getInstance();
+                                        currentCal.setTime(currentDate);
+                                        currentCal.set(Calendar.HOUR_OF_DAY, 0);
+                                        currentCal.set(Calendar.MINUTE, 0);
+                                        currentCal.set(Calendar.SECOND, 0);
+                                        currentCal.set(Calendar.MILLISECOND, 0);
+
+                                        // Create range for 1 to 3 days from now
+                                        Calendar tomorrowCal = (Calendar) currentCal.clone();
+                                        tomorrowCal.add(Calendar.DAY_OF_YEAR, 1);
+
+                                        Calendar dayAfterTomorrowCal = (Calendar) currentCal.clone();
+                                        dayAfterTomorrowCal.add(Calendar.DAY_OF_YEAR, 3);
+
+                                        // Check if the endDate is in the range of tomorrow to day after tomorrow
+                                        Calendar endCal = Calendar.getInstance();
+                                        endCal.setTime(endDate);
+                                        endCal.set(Calendar.HOUR_OF_DAY, 0);
+                                        endCal.set(Calendar.MINUTE, 0);
+                                        endCal.set(Calendar.SECOND, 0);
+                                        endCal.set(Calendar.MILLISECOND, 0);
+
+                                        if (!endCal.before(tomorrowCal) && !endCal.after(dayAfterTomorrowCal)) {
+                                            memberList.add(member); // Add member to the list
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    break;
+
+                                case 5:
+                                    try {
+                                        Date endDate = sdf.parse(endDateStr);
+                                        // Normalize current date
+                                        Calendar currentCal = Calendar.getInstance();
+                                        currentCal.setTime(currentDate);
+                                        currentCal.set(Calendar.HOUR_OF_DAY, 0);
+                                        currentCal.set(Calendar.MINUTE, 0);
+                                        currentCal.set(Calendar.SECOND, 0);
+                                        currentCal.set(Calendar.MILLISECOND, 0);
+
+                                        // Create range for 4 to 7 days from now
+                                        Calendar fourDaysFromNowCal = (Calendar) currentCal.clone();
+                                        fourDaysFromNowCal.add(Calendar.DAY_OF_YEAR, 4);
+
+                                        Calendar sevenDaysFromNowCal = (Calendar) currentCal.clone();
+                                        sevenDaysFromNowCal.add(Calendar.DAY_OF_YEAR, 7);
+
+                                        // Check if the endDate is in the range of 4 to 7 days
+                                        Calendar endCal = Calendar.getInstance();
+                                        endCal.setTime(endDate);
+                                        endCal.set(Calendar.HOUR_OF_DAY, 0);
+                                        endCal.set(Calendar.MINUTE, 0);
+                                        endCal.set(Calendar.SECOND, 0);
+                                        endCal.set(Calendar.MILLISECOND, 0);
+
+                                        if (!endCal.before(fourDaysFromNowCal) && !endCal.after(sevenDaysFromNowCal)) {
+                                            memberList.add(member); // Add member to the list
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    break;
+
+
+
+                                case 6:
                                     if(member.getPaidAmount() < member.getPlanAmount()){
                                         memberList.add(member);
                                     }
@@ -162,7 +248,78 @@ public class MembersActivity extends AppCompatActivity {
         getMembersData();
         membersAdapter = new MembersAdapter(memberList);
         rvMemberCards.setAdapter(membersAdapter);
+        profileClickListener();
+        editClickListener();
+        deleteClickListener();
 
 
+
+    }
+
+    private void profileClickListener(){
+        membersAdapter.setIOnProfileClickListener(new MembersAdapter.IOnProfileClickListener() {
+            @Override
+            public void onProfileButtonClick(MembersAdapter.MemberViewHolder holder, int position, ImageButton ibProfileButton) {
+                Member member = memberList.get(position);
+                Intent intent = new Intent(MembersActivity.this, MemberProfileActivity.class);
+                intent.putExtra("MEMBER_ID", member.getMemberId());
+                startActivity(intent);
+
+            }
+        });
+    }
+
+   private void editClickListener(){
+        membersAdapter.setIOnEditClickListener(new MembersAdapter.IOnEditClickListener() {
+            @Override
+            public void onEditButtonClick(MembersAdapter.MemberViewHolder holder, int position, ImageButton ibProfileButton) {
+
+                Member member = memberList.get(position);
+                Intent intent = new Intent(MembersActivity.this, AddMemberActivity.class);
+                intent.putExtra("MEMBER_ID", member.getMemberId());
+                startActivity(intent);
+
+            }
+        });
+   }
+
+    private void deleteClickListener(){
+
+        membersAdapter.setIOnDeleteClickListener(new MembersAdapter.IOnDeleteClickListener() {
+            @Override
+            public void onDeleteButtonClick(MembersAdapter.MemberViewHolder holder, int position, ImageButton ibProfileButton) {
+                Member member = memberList.get(position);
+                new AlertDialog.Builder(MembersActivity.this).setIcon(R.drawable.delete).setTitle("Delete").setMessage("Do you want to delete this member?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteFunctionality(member.getMemberId());
+                        dialog.dismiss();
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).setCancelable(false).create().show();
+            }
+        });
+    }
+
+    private void deleteFunctionality(String memberId){
+        DatabaseReference memberRef = FirebaseDatabase.getInstance()
+                .getReference()
+                .child(FirebaseHelper.APP_USERS)
+                .child(currentUserId) // Replace with your current user's ID
+                .child(FirebaseHelper.MEMBERS)
+                .child(memberId);
+
+        // Perform the delete operation
+        memberRef.removeValue().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(this, "Member deleted successfully!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Failed to delete member: " + task.getException(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

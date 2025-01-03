@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
@@ -13,6 +14,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -27,12 +29,17 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 public class AddMemberActivity extends AppCompatActivity {
@@ -48,6 +55,7 @@ public class AddMemberActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private String appUserId;
     private String gender = "Male";
+    private String id;
 
 
     @SuppressLint("MissingInflatedId")
@@ -77,6 +85,16 @@ public class AddMemberActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.topAppBar);
 
         btnSubmit = findViewById(R.id.btnSubmit);
+
+//        Receive Intent to update data
+        Intent intent = getIntent();
+        id = intent.getStringExtra("MEMBER_ID");
+        if (id != null){
+            toolbar.setTitle("Update Member");
+            btnSubmit.setText("Update");
+            getMemberDetails(id);
+
+        }
 
 //        Click Listeners
         etStartDatePicker.setText(getCurrentDate());
@@ -171,10 +189,15 @@ public class AddMemberActivity extends AppCompatActivity {
             Toast.makeText(this, "Please select start date", Toast.LENGTH_SHORT).show();
         } else if (endDate.isEmpty()) {
             Toast.makeText(this, "Please select end date", Toast.LENGTH_SHORT).show();
-        }else{
-            long timestamp = System.currentTimeMillis();  // Store the current timestamp
-            Member member = new Member(timestamp ,gender ,endDate, startDate, Double.parseDouble(paidAmount), Double.parseDouble(planAmount), planName, address, phoneNumber, name);
+        }else {
+            long timestamp;
+            if (id == null){
+            timestamp = System.currentTimeMillis();  // Store the current timestamp
+            Member member = new Member(timestamp, gender, endDate, startDate, Double.parseDouble(paidAmount), Double.parseDouble(planAmount), planName, address, phoneNumber, name);
             saveMemberToFirebase(member);
+            }else{
+                updateMemberData(id, address, endDate, gender, name,Double.parseDouble(paidAmount) , phoneNumber, Double.parseDouble(planAmount), planName, startDate);
+            }
         }
     }
 //      Save data to firebase
@@ -228,14 +251,136 @@ public class AddMemberActivity extends AppCompatActivity {
     private String getCurrentDate(){
         // Get the current date
         Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH); // Month is 0-based, so January is 0
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        // Format the date as "dd/MM/yyyy"
+        // Format the date as "dd/MM/yy"
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yy", Locale.getDefault());
         return simpleDateFormat.format(calendar.getTime());
     }
+
+    private void getMemberDetails(String memberId) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference()
+                .child(FirebaseHelper.APP_USERS)
+                .child(appUserId)
+                .child(FirebaseHelper.MEMBERS)
+                .child(memberId);
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Map data to Member object
+                    Member member = dataSnapshot.getValue(Member.class);
+
+                    // Extract member details
+                    if (member != null) {
+                        String name = member.getName();
+                        String phoneNumber = member.getPhoneNumber();
+                        String address = member.getAddress();
+                        String gender = member.getGender();
+                        String startDate = member.getStartDate();
+                        String endDate = member.getEndDate();
+                        double paidAmount = member.getPaidAmount();
+                        double planAmount = member.getPlanAmount();
+                        String planName = member.getPlanName();
+                        long timeStamp = member.getTimeStamp();
+
+                        // Use the member data (e.g., display in TextViews)
+                        updateUI(name, phoneNumber, address, gender, startDate, endDate, paidAmount, planAmount, planName);
+                    }
+                } else {
+                    Toast.makeText(AddMemberActivity.this, "Member not found!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("FirebaseError", error.getMessage());
+            }
+
+
+        });
+    }
+
+    private void updateUI(String name, String phoneNumber, String address, String gender,
+                          String startDate, String endDate, double paidAmount, double planAmount,
+                          String planName) {
+        etName.setText(name);
+        etPhoneNumber.setText(phoneNumber);
+        etAddress.setText(address);
+        checkRadioButtonByTitle(radioGroup, gender);
+        etPlanName.setText(planName);
+        etPlanAmount.setText(String.valueOf(planAmount));
+        etPaidAmount.setText(String.valueOf(paidAmount));
+        etStartDatePicker.setText(startDate);
+        etEndDatePicker.setText(endDate);
+    }
+
+    private void checkRadioButtonByTitle(RadioGroup radioGroup, String titleToCheck) {
+        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+            View child = radioGroup.getChildAt(i);
+            if (child instanceof RadioButton) {
+                RadioButton radioButton = (RadioButton) child;
+                if (radioButton.getText().toString().equals(titleToCheck)) {
+                    radioButton.setChecked(true);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void updateMemberData(String memberId, String address, String endDate, String gender, String name,
+                                  double paidAmount, String phoneNumber, double planAmount, String planName, String startDate) {
+        // Reference to the member node
+        DatabaseReference memberRef = FirebaseDatabase.getInstance()
+                .getReference()
+                .child(FirebaseHelper.APP_USERS)
+                .child(appUserId) // Replace with your current user's ID
+                .child(FirebaseHelper.MEMBERS)
+                .child(memberId);
+
+        // Create a map for updated data
+        Map<String, Object> updateData = new HashMap<>();
+        updateData.put("address", address);
+        updateData.put("endDate", endDate);
+        updateData.put("gender", gender);
+        updateData.put("name", name);
+        updateData.put("paidAmount", paidAmount);
+        updateData.put("phoneNumber", phoneNumber);
+        updateData.put("planAmount", planAmount);
+        updateData.put("planName", planName);
+        updateData.put("startDate", startDate);
+
+        // Perform the update
+        memberRef.updateChildren(updateData).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                new AlertDialog.Builder(AddMemberActivity.this).setTitle("Success").setMessage("Member Updated Successfully").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                }).setCancelable(false).setIcon(R.drawable.checked).show();
+                clearTextFields();
+            } else {
+                new AlertDialog.Builder(AddMemberActivity.this).setTitle("Failure").setMessage("Member Not Updated").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                }).setCancelable(false).setIcon(R.drawable.cancel).show();
+                clearTextFields();            }
+        });
+    }
+
+    private void getDataFromTextFields(){
+
+    }
+
+
+
+
 
 
 
